@@ -10,4 +10,3 @@ http://datamapper.org/getting-started.html
 1. start irb ``` irb ```
 2. load app in irb ``` require './app.rb'
 3. create some payment models ``` Payment.create(user_id: 1, amount: 400, status: 'unpaid') ```
-
