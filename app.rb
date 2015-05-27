@@ -28,11 +28,16 @@ class PaymentService
                                                correlation_id: properties.correlation_id })
     end
   end
-end
 
-begin
-  payment_service = PaymentService.new
-  payment_service.init_rpc
-rescue Interrupt => _
-  $bunny.close
+  def self.pay(payment_id)
+    payment = Payment.get payment_id
+    payment.status = 'paid'
+    if payment.save
+      puts "Payment #{payment.id} was paid"
+      channel = $bunny.create_channel
+      queue = channel.queue('rpc_payment')
+      exchange = channel.fanout('payments')
+      exchange.publish("Payment #{payment.id} was paid")
+    end
+  end
 end
